@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<link href="/css/Style1.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
+<script type="text/javascript" th:inline="javascript">
+	var ctxPath = [[@{/}]];//项目根路径
+	var currCondition = "";
+	window.onload=function(){
+		currCondition = [[${currCondition}]];
+		$("#curr_condition").val(currCondition);
+	}
+	
+	function findByProductname(){
+		var productname = $("#select_condition").val();
+		window.location.href="/manage/findProductListByProductname?productname="+productname;
+	}
+	
+	function addProduct(){
+		window.location.href="/manage/addProduct";
+	}
+	
+	function toModifyPage(productId){
+		window.location.href="/manage/toModifyProductPage?productId="+productId;
+	}
+	
+	function deleteProduct(productId){
+		if (confirm("确认删除该商品吗？")) {
+			$.ajax({
+				type:"GET",
+				url:"/manage/deleteProduct?productId="+productId,
+				data:{
+					
+				},
+				dataType:"JSON",
+				success:function(data){
+					if (data.status == "1") {
+						alert("删除成功！");
+						window.location.href=ctxPath+"manage/productManage";
+					}
+					if (data.status == "2"){
+						alert("删除失败，请重试");
+					}
+				}
+			})
+		}
+	}
+	
+</script>
+</head>
+<body>
+		<br/>
+		<form style="padding-left: 35%">
+			<input id="curr_condition" type="text" readonly="readonly" hidden="true"/>
+			<font>商品名：</font>				
+			<input id="select_condition" type="text" />
+			<input type="button" onclick="findByProductname()" value="搜索" title="搜索"/>
+		</form>
+		<br/>
+		<form id="Form1" name="Form1">
+			<table cellSpacing="1" cellPadding="0" width="100%" align="center" bgColor="#f5fafe" border="0">
+				<tbody>
+					<tr>
+						<td class="ta_01" align="center" bgColor="#afd1f3">
+							<strong>商品 列 表</strong>
+						</td>
+					</tr>
+					<tr>
+						<td class="ta_01" align="right">
+							<button type="button" id="add" name="add" value="添加" class="button_add" onclick="addProduct()">
+							&#28155;&#21152;
+							</button>
+
+						</td>
+					</tr>
+					<tr>
+						<td class="ta_01" align="center" bgColor="#f5fafe">
+							<table cellspacing="0" cellpadding="1" rules="all"
+								bordercolor="gray" border="1" id="DataGrid1"
+								style="BORDER-RIGHT: gray 1px solid; BORDER-TOP: gray 1px solid; BORDER-LEFT: gray 1px solid; WIDTH: 100%; WORD-BREAK: break-all; BORDER-BOTTOM: gray 1px solid; BORDER-COLLAPSE: collapse; BACKGROUND-COLOR: #f5fafe; WORD-WRAP: break-word">
+								<tr
+									style="FONT-WEIGHT: bold; FONT-SIZE: 12pt; HEIGHT: 25px; BACKGROUND-COLOR: #afd1f3">
+
+									<td align="center" width="10%">
+										序号
+									</td>
+									<td align="center" width="17%">
+										商品图片
+									</td>
+									<td align="center" width="17%">
+										商品名称
+									</td>
+									<td align="center" width="8%">
+										商城价格
+									</td>
+									<td align="center" width="23%">
+										市场价格
+									</td>
+									<td width="11%" align="center">
+										是否热门
+									</td>
+									<td width="7%" align="center">
+										编辑
+									</td>
+									<td width="7%" align="center">
+										删除
+									</td>
+								</tr>
+								    
+									<th:block th:each="product,liststat:${pageInfo.list}">
+										<tr onmouseover="this.style.backgroundColor = 'white'"
+											onmouseout="this.style.backgroundColor = '#F5FAFE';">
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center"
+												width="10%" th:text="${product.productId}">
+												
+											</td>
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center"
+												width="17%">
+												<img width="45" height="50" th:src="${product.productImageUrl}"/>
+											</td>
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center"
+												width="17%" th:text="${product.productName}">
+												
+											</td>
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center"
+												width="8%" th:text="${product.productPriceShop}">
+												
+											</td>
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center"
+												width="23%" th:text="${product.productPriceMarket}">
+												
+											</td>
+											<td style="CURSOR: hand; HEIGHT: 22px" align="center">
+												<th:block th:if="${product.ishot} eq '1'">
+													<font>是</font>
+												</th:block>
+												<th:block th:if="${product.ishot} eq '0'">
+													<font>否</font>
+												</th:block>
+											</td>
+											<td align="center" style="HEIGHT: 22px">
+												<a>
+													<img th:onclick="'javascript:toModifyPage('+${product.productId}+')'" src="/images/i_edit.gif" border="0" style="CURSOR: hand"/>
+												</a>
+											</td>
+											
+											<td align="center" style="HEIGHT: 22px">
+												<a>
+													<img src="/images/i_del.gif" th:onclick="'javascript:deleteProduct('+${product.productId}+')'" width="16" height="16" border="0" style="CURSOR: hand"/>
+												</a>
+											</td>
+										</tr>
+									</th:block>	
+									
+									<tr style="FONT-WEIGHT: bold; FONT-SIZE: 12pt; HEIGHT: 25px; BACKGROUND-COLOR: #afd1f3">
+									<td align="center" width="18%" colspan="8">
+									          第<font th:text="${pageInfo.pageNum }" style="color: blue"></font>页   
+										每页显示<font th:text="${pageInfo.pageSize }" style="color: blue"></font>条   
+										总记录数<font th:text="${pageInfo.total }" style="color: blue"></font>条  
+										<div>
+											<th:block th:if="${pageInfo.pageNum ne null}">
+												<a th:href="@{'/manage/findProductListByPage?pageNum=1&productname='+${currCondition}}">首页</a>
+												<a th:href="@{'/manage/findProductListByPage?pageNum='+${pageInfo.pageNum - 1}+'&productname='+${currCondition}}">前一页</a>
+											</th:block>
+											<!-- 分页显示页码这里选择的是9,若是总页数小于等于9,则全部显示 -->
+											<th:block th:if="${pageInfo.pages <= 9 }" th:each="i:${#numbers.sequence(1,pageInfo.pages)}">
+												<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font><!-- 如果是当前页码，则为font -->
+												<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findProductListByPage?pageNum='+${i}+'&productname='+${currCondition}}" th:text="${i}"></a><!-- 如果不是当前页码，则为链接 -->
+											</th:block>
+											<!-- 当总页数大于9的时候 -->
+											<th:block th:if="${pageInfo.pages >= 9 }">
+												<!-- 若是当前页小于5,则显示9个页码后用...代替,表示后面还有 -->
+												<th:block th:if="${pageInfo.pageNum <= 5 }" th:each="i:${#numbers.sequence(1,9)}">
+													<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+													<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findProductListByPage?pageNum='+${i}+'&productname='+${currCondition}}" th:text="${i}"></a><!-- 如果不是当前页码，则为链接 -->
+													<font>...</font>
+												</th:block>
+												<!-- 若是当前页大于5,则需要进行下面的判断 -->
+												<th:block th:if="${pageInfo.pageNum > 5 }">
+													<!-- 若是这种情况,则为中间显示9个页码,前后均为... -->
+													<th:block th:if="${pageInfo.pageNum + 4 < pageInfo.pages }">
+														<font>...</font>
+														<th:block th:each="i:${#numbers.sequence(pageInfo.pageNum - 4,pageInfo.pageNum + 4)}">
+															<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+															<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findProductListByPage?pageNum='+${i}+'&productname='+${currCondition}}" th:text="${i}"></a>
+														</th:block>
+														<font>...</font>
+													</th:block>
+													<!-- 若是这种情况,只需前面加上...即可 -->
+													<th:block th:if="${pageInfo.pageNum + 4 >= pageInfo.pages }">
+														<font>...</font>
+														<th:block th:each="i:${#numbers.sequence(pageInfo.pages - 8,pageInfo.pages)}">
+															<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+															<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findProductListByPage?pageNum='+${i}+'&productname='+${currCondition}}" th:text="${i}"></a>
+														</th:block>
+													</th:block>
+												</th:block>
+											</th:block>
+											<th:block th:if="${pageInfo.pageNum != pageInfo.pages}">
+												<a th:href="@{'/manage/findProductListByPage?pageNum='+${pageInfo.pageNum+1}+'&productname='+${currCondition}}">后一页</a>
+												<a th:href="@{'/manage/findProductListByPage?pageNum='+${pageInfo.pages}+'&productname='+${currCondition}}">末页</a>
+											</th:block>
+										</div>
+									</td>
+									
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+</body>
+</html>

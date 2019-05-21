@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+   
+    <title>商城管理系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>  
+	<style>
+         body { font: 12px/20px "微软雅黑", "宋体", Arial, sans-serif, Verdana, Tahoma;padding: 0;margin: 0;} 
+         .cs-north {height:60px;background:#B3DFDA;}
+         .cs-north-bg{
+	               width: 100%;
+				   height: 100%;
+				   background: url(/images/header_bg.png) repeat-x;
+                   }
+				.cs-north-logo {
+					height: 40px;
+					padding: 15px 0px 0px 5px;
+					color:#fff;font-size:22px;font-weight:bold;text-decoration:none
+				}
+				.cs-west {
+					width:200px;padding:0px;border-left:1px solid #99BBE8;
+				}
+				.cs-south {
+					height:25px;background:url(/images/panel_title.gif) repeat-x;padding:0px;text-align:center;
+				}
+				.cs-navi-tab {
+					padding: 5px;
+				}
+				.cs-tab-menu {
+					width:120px;
+				}
+				.cs-home-remark {
+					padding: 10px;
+				}
+			    a{cursor: pointer;}
+                a:link {color:red;text-decoration:none} 
+                a:hover{color:blue} 
+                li{line-height: 20px;list-style-type:none;}
+                #iframe_div{
+                	position:absolute;
+                	left: 200px;
+                	top: 80px;
+                }
+                #iframe1{
+                	width: 1000px;
+                	height: 500px;
+                }
+    </style>
+	<script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
+	    <script type="text/javascript" th:inline="javascript">  
+       var ctxPath = [[@{/}]];//项目根路径
+       
+    	 //iframe动态改变
+       	function userManageIframe(){
+    	    document.getElementById("iframe1").src = "/manage/allUserlist";
+       	}
+       
+       function permissionManageIframe(){
+    	   document.getElementById("iframe1").src = "/manage/permissionManage";
+       }
+       
+       function roleManageIframe(){
+    	   document.getElementById("iframe1").src = "/manage/roleManage";
+       }
+       
+       function productManageIframe(){
+    	   document.getElementById("iframe1").src = "/manage/productManage";
+       }
+       
+       function startTime()
+	   {
+		  var today=new Date()
+		  var h=today.getHours()
+		  var m=today.getMinutes()
+		  var s=today.getSeconds()
+		  // add a zero in front of numbers<10
+		  m=checkTime(m)
+		  s=checkTime(s)
+		  $("#showTime").html(h+":"+m+":"+s);
+		  t=setTimeout('startTime()',500)
+		}
+
+		  function checkTime(i)
+		  {
+		  if (i<10) 
+		    {i="0" + i}
+		    return i
+		  }
+
+		  function showDate()
+		  {
+			var tmpDate = new Date();
+ 		    date = tmpDate.getDate();
+ 		    month= tmpDate.getMonth() + 1 ;
+ 		    year= tmpDate.getFullYear();
+ 		    myArray=new Array(6);
+ 		    myArray[0]="星期日"
+ 		    myArray[1]="星期一"
+ 		    myArray[2]="星期二"
+ 		    myArray[3]="星期三"
+ 		    myArray[4]="星期四"
+ 		    myArray[5]="星期五"
+ 		    myArray[6]="星期六"
+ 		    weekday=tmpDate.getDay();
+ 		    if (weekday==0 | weekday==6)
+ 		    {
+ 		      $("#dateMessage").html(year+"年"+month+"月"+date+"日"+"&nbsp;&nbsp;"+myArray[weekday]);
+ 		    }
+ 		    else
+ 		    {
+ 		    	$("#dateMessage").html(year+"年"+month+"月"+date+"日"+"&nbsp;&nbsp;"+myArray[weekday]);
+ 		    }
+		  }
+
+		  
+         $(function(){
+        	//显示日期
+        	 showDate();
+ 		    //显示钟表
+ 		    startTime();
+ 		    
+             //选择a标签且带有title
+             /* $("a[title]").click(function(){
+                 //获取当前被点击的链接的title属性的值
+                 var src=$(this).attr("title");
+                 var titleName=$(this).html();
+                 
+                 if(!$("#tt").tabs("exists",titleName))
+                 {
+                     $("#tt").tabs("add",{
+                         title:titleName,
+                         content:"<iframe frameborder=0 style=width:100%;height:100% src="+src+"></iframe>",
+                         closable:true
+                     });
+                 }else{
+                      $("#tt").tabs("select",titleName);
+                      var currentPanel=$("#tt").tabs("getSelected");
+                      var src=$(currentPanel.panel('options').content).attr("src");
+                       $("#tt").tabs("update",{
+                           tab:currentPanel,
+                           options:{
+                              content:"<iframe frameborder=0 style=width:100%;height:100% src="+src+"></iframe>"
+                           }
+                       });
+                 } */
+                 
+             });
+             
+             /* $("#tt").tabs({
+                onContextMenu:function(e,title){
+                    //禁止浏览器的右键菜单
+                    e.preventDefault();
+                    $("#mm").menu("show",{
+                          left:e.pageX,
+                          top:e.pageY
+                    });
+                   
+                }
+             }); */
+             
+             
+                //关闭除当前之外的TAB
+				/* $('#mm-tabcloseother').click(function(){
+					var prevall = $('.tabs-selected').prevAll();
+					var nextall = $('.tabs-selected').nextAll();		
+					if(prevall.length>0){
+						prevall.each(function(i,n){
+							var t=$('a:eq(0) span',$(n)).text();
+							if(t != 'Home') {
+								$('#tt').tabs('close',t);
+							}
+						});
+					}
+					if(nextall.length>0) {
+						nextall.each(function(i,n){
+							var t=$('a:eq(0) span',$(n)).text();
+							if(t != 'Home') {
+								$('#tt').tabs('close',t);
+							}
+						});
+					}
+					return false;
+				}); */
+				
+				//关闭全部
+                /* $('#mm-tabcloseall').click(function(){
+					$('.tabs-inner span').each(function(i,n){
+						var t = $(n).text();
+						if(t != 'Home') {
+							$('#tt').tabs('close',t);
+						}
+					});
+				}); */
+         /* }); */
+         
+         /* function update(){
+              var currentPanel=$("#tt").tabs("getSelected");
+              var src=$(currentPanel.panel('options').content).attr("src");
+               $("#tt").tabs("update",{
+                   tab:currentPanel,
+                   options:{
+                      content:"<iframe frameborder=0 style=width:100%;height:100% src="+src+"></iframe>"
+                   }
+               }); 
+         } */
+         
+         /* function closeTabs()
+         {
+              var currentPanel=$("#tt").tabs("getSelected");
+              var closeTitle=currentPanel.panel("options").title;
+              if(closeTitle!="Home")
+              {
+                 $("#tt").tabs("close",closeTitle);
+              }
+             
+         } */
+         
+         
+    </script>
+    
+  </head>
+  
+  <body class="easyui-layout">
+        <!-- 最上边 -->
+        <div region="north" border="false" class="cs-north" split=false>
+		    <div  style="position: absolute">
+		           <div class="cs-north-logo">
+		             <div>电子商务平台</div> 
+		             <div style="font-size:14px;padding-left:730px" >
+		                  <span id="dateMessage"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+		                  <span id="showTime"></span>&nbsp;
+		                  <span th:if="${activeUser} ne null" th:text="'当前账号：'+${activeUser.userName}"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+		                  <a th:if="${activeUser} ne null" href="">退出</a>
+		             </div>                     
+		           </div>   
+		    </div>
+	    </div>
+	    
+	    <!-- 最左边 -->
+	    <div region="west" border="true"  title="菜单" class="cs-west" split=false>
+	          <div class="easyui-accordion" fit="true" border="false" style="weight:30%">
+	          	  <h4>用户管理>></h4>
+	              <div title="用户管理" iconCls="icon-save" selected="true" style="overflow:auto;padding:10px;">
+	                 <ul>
+			              <!-- <li><a href="javascript:void(0)" title="form.html" >sss</a></li> -->
+			              <li><a onclick="userManageIframe()">用户列表</a></li>
+			              <li><a onclick="roleManageIframe()">角色管理</a></li>
+			              <li><a onclick="permissionManageIframe()">权限管理</a></li>
+			         </ul>
+	              </div>
+	              <h4>商品管理>></h4>
+	              <div title="商品管理" iconCls="icon-reload"  style="padding:10px;">  
+                     <ul>
+                        <li><a onclick="productManageIframe()">商品管理</a></li>
+                     </ul>
+			      </div>
+			      <h4>订单管理>></h4>
+			      <div title="订单管理">  
+                     <ul>
+                       <li><a href="javascript:void(0)" title="${pageContext.request.contextPath}/console/order/queryAllOrderAction.action?page=1" >查询所有订单</a></li>
+                       <li><a href="javascript:void(0)" title="${pageContext.request.contextPath}/console/order/queryOrderAction.action?state=1&page=1" >未付款订单</a></li>
+                       <li><a href="javascript:void(0)" title="${pageContext.request.contextPath}/console/order/queryOrderAction.action?state=2&page=1" >已付款订单</a></li>
+                       <li><a href="javascript:void(0)" title="${pageContext.request.contextPath}/console/order/queryOrderAction.action?state=3&page=1" >已发货订单</a></li>
+                       <li><a href="javascript:void(0)" title="${pageContext.request.contextPath}/console/order/queryOrderAction.action?state=4&page=1" >已完成订单</a></li>
+                     </ul>
+			      </div> 
+			      <h4>分类管理>></h4>
+			      <div title="一级分类管理">  
+                     <ul>
+                       <li><a href="" title="" >一级分类管理</a></li>
+                     </ul>
+			      </div> 
+			      <div title="二级分类管理">  
+                     <ul>
+                       <li><a href="" title="" >二级分类管理</a></li>
+                     </ul>
+			      </div> 
+	          </div>
+	          <div id="iframe_div" >
+	          		<iframe id="iframe1"   scrolling="auto">
+	          		
+	          		</iframe>
+	          </div>
+	    </div>
+	    <script type="text/javascript" th:inline="javascript">
+	  		
+	    </script>
+
+	     <!-- 中间 -->
+	    <!-- <div id="mainPanle" region="center" border="false">
+			 <div id="tt" class="easyui-tabs"  fit="true" border="false" >
+				    <div title="Home">
+						<div class="cs-home-remark">
+							
+						</div>
+					</div>
+			 </div>
+	    </div> -->
+	    
+	    <!-- 底部 -->
+	     <!--<div region="south" split="false" style="height:20px;">
+			<div class="cs-north-bg">本系统由：xxxxx</div>
+	    </div>
+	    
+	    <div id="mm" class="easyui-menu cs-tab-menu" style="width:120px;">
+			<div id="mm-tabupdate" onclick="update();">刷新</div>
+			<div class="menu-sep"></div>
+			<div id="mm-tabclose" onclick="closeTabs();">关闭</div>
+			<div id="mm-tabcloseother">关闭其他</div>
+			<div id="mm-tabcloseall">关闭全部</div>
+        </div>  -->
+  </body>
+  
+</html>

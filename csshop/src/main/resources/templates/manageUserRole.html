@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
+<script type="text/javascript" th:inline="javascript">
+	var ctxPath = [[@{/}]];//项目根路径
+	var currCondition = "";
+	
+	window.onload=function(){
+		currCondition = [[${currCondition}]];
+		$("#curr_condition").val(currCondition);
+	}
+	
+	function findByUsername(){
+		var username = $("#select_condition").val();
+		window.location.href="/manage/findUserRoleListByUsername?username="+username;
+	}
+</script>
+</head>
+<body>
+	<div id="userList" align="center">
+			<form>
+				<input id="curr_condition" type="text" readonly="readonly" hidden="true"/>
+				<font>用户名：</font>				
+				<input id="select_condition" type="text" />
+				<input type="button" onclick="findByUsername()" value="搜索" title="搜索"/>
+			</form>
+			<br />
+		<div id="table_area">
+			<table id="table_uesr" border="1">
+				<thead>
+					<tr>
+						<td>用户id</td>
+						<td>用户名</td>
+						<td>角色</td>
+						<td>操作</td>
+					</tr>
+				</thead>
+				<tbody>
+					<th:block th:each="userRole,userstat:${pageInfo.list}">
+						<tr>
+							<td th:text="${userRole.userId }"></td>
+							<td th:text="${userRole.userName }"></td>
+							<td>
+								<th:block th:if="${userRole.roleId == 1 }">
+									<font>管理员</font>
+								</th:block>
+								<th:block th:if="${userRole.roleId == 2 }">
+									<font>用户</font>
+								</th:block>
+							</td>
+							<td>
+								<a th:href="@{'/manage/goModifyUserRole?userId='+${userRole.userId }+'&userName='+${userRole.userName}+'&roleId='+${userRole.roleId}}">修改</a>
+							</td>
+						</tr>
+					</th:block>
+					
+						<tr align="center">
+						   <td colspan="9">
+							 第<font th:text="${pageInfo.pageNum }" style="color: blue"></font>页   
+							每页显示<font th:text="${pageInfo.pageSize }" style="color: blue"></font>条   
+							总记录数<font th:text="${pageInfo.total }" style="color: blue"></font>条  
+							<div>
+								<th:block th:if="${pageInfo.pageNum ne null}">
+									<a th:href="@{'/manage/findUserRoleListByPage?pageNum=1&username='+${currCondition}}">首页</a>
+									<a th:href="@{'/manage/findUserRoleListByPage?pageNum='+${pageInfo.pageNum - 1}+'&username='+${currCondition}}">前一页</a>
+								</th:block>
+								<!-- 分页显示页码这里选择的是9,若是总页数小于等于9,则全部显示 -->
+								<th:block th:if="${pageInfo.pages <= 9 }" th:each="i:${#numbers.sequence(1,pageInfo.pages)}">
+									<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font><!-- 如果是当前页码，则为font -->
+									<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findUserRoleListByPage?pageNum='+${i}+'&username='+${currCondition}}" th:text="${i}"></a><!-- 如果不是当前页码，则为链接 -->
+								</th:block>
+								<!-- 当总页数大于9的时候 -->
+								<th:block th:if="${pageInfo.pages >= 9 }">
+									<!-- 若是当前页小于5,则显示9个页码后用...代替,表示后面还有 -->
+									<th:block th:if="${pageInfo.pageNum <= 5 }" th:each="i:${#numbers.sequence(1,9)}">
+										<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+										<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findUserRoleListByPage?pageNum='+${i}+'&username='+${currCondition}}" th:text="${i}"></a><!-- 如果不是当前页码，则为链接 -->
+										<font>...</font>
+									</th:block>
+									<!-- 若是当前页大于5,则需要进行下面的判断 -->
+									<th:block th:if="${pageInfo.pageNum > 5 }">
+										<!-- 若是这种情况,则为中间显示9个页码,前后均为... -->
+										<th:block th:if="${pageInfo.pageNum + 4 < pageInfo.pages }">
+											<font>...</font>
+											<th:block th:each="i:${#numbers.sequence(pageInfo.pageNum - 4,pageInfo.pageNum + 4)}">
+												<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+												<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findUserRoleListByPage?pageNum='+${i}+'&username='+${currCondition}}" th:text="${i}"></a>
+											</th:block>
+											<font>...</font>
+										</th:block>
+										<!-- 若是这种情况,只需前面加上...即可 -->
+										<th:block th:if="${pageInfo.pageNum + 4 >= pageInfo.pages }">
+											<font>...</font>
+											<th:block th:each="i:${#numbers.sequence(pageInfo.pages - 8,pageInfo.pages)}">
+												<font th:if="${pageInfo.pageNum == i}"  th:text="${i}"></font>
+												<a th:if="${pageInfo.pageNum != i}" th:href="@{'/manage/findUserRoleListByPage?pageNum='+${i}+'&username='+${currCondition}}" th:text="${i}"></a>
+											</th:block>
+										</th:block>
+									</th:block>
+								</th:block>
+								<th:block th:if="${pageInfo.pageNum != pageInfo.pages}">
+									<a th:href="@{'/manage/findUserRoleListByPage?pageNum='+${pageInfo.pageNum+1}+'&username='+${currCondition}}">后一页</a>
+									<a th:href="@{'/manage/findUserRoleListByPage?pageNum='+${pageInfo.pages}+'&username='+${currCondition}}">末页</a>
+								</th:block>
+							</div>
+							 
+						   
+						   </td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

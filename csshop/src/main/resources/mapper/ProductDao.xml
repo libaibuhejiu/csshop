@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huaruan.csshop.dao.ProductDao">
+  	<resultMap id="BaseProductResultMap" type="com.huaruan.csshop.bean.Product">
+	    <id column="product_id" jdbcType="INTEGER" property="productId" />
+	    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+	    <result column="product_quantity" jdbcType="INTEGER" property="productQuantity"/>
+	    <result column="product_price_shop" jdbcType="DECIMAL" property="productPriceShop" />
+	    <result column="product_price_market" jdbcType="DECIMAL" property="productPriceMarket" />
+	    <result column="category_2_id" jdbcType="INTEGER" property="category2Id" />
+	    <result column="ishot" jdbcType="VARCHAR" property="ishot" />
+	    <result column="product_image_url" jdbcType="VARCHAR" property="productImageUrl" />
+	    <result column="product_description" jdbcType="VARCHAR" property="productDescription" />
+  	</resultMap>
+  	<sql id="Base_Product_Column_List">
+	    product_id, product_name, product_price_shop, product_price_market, category_2_id, 
+	    ishot, product_image_url,product_description,product_quantity
+  	</sql>
+  	
+  	<!-- select -->
+  	<select id="findProductListByProductName" resultMap="BaseProductResultMap">
+  		select *
+  		from product
+  		where product_name like "%"#{productName}"%"
+  	</select>
+  	
+  	<select id="findAllCategory2List" resultType="com.huaruan.csshop.bean.Category2">
+  		select category_2_id as category2Id,category_2_name as category2Name,category_1_id as category1Id
+  		from category_2 
+  	</select>
+  	
+  	<select id="findProductByProductId" resultMap="BaseProductResultMap">
+  		select *
+  		from product
+  		where product_id = #{productId}
+  	</select>
+  	
+  	<select id="findAllHotProduct" resultMap="BaseProductResultMap">
+  		select *
+  		from product
+  		where ishot = "1"
+  	</select>
+  	
+  	<!-- insert -->
+  	<insert id="insertNewProduct" parameterType="com.huaruan.csshop.bean.Product"
+  			useGeneratedKeys="true" keyProperty="productId">
+  		insert into product (product_name, product_price_shop, 
+	      product_price_market, category_2_id, ishot,product_image_url, product_quantity,product_description)
+    	values (#{productName,jdbcType=VARCHAR}, #{productPriceShop,jdbcType=DECIMAL}, 
+	      #{productPriceMarket,jdbcType=DECIMAL}, #{category2Id,jdbcType=INTEGER}, #{ishot,jdbcType=VARCHAR}, 
+	      #{productImageUrl,jdbcType=VARCHAR},#{productQuantity,jdbcType=INTEGER},#{productDescription,jdbcType=VARCHAR})	
+  	</insert>
+  	
+  	<!-- update -->
+  	<update id="updateProductByProduct" parameterType="com.huaruan.csshop.bean.Product">
+  		update product
+  		<set>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productPriceShop != null">
+        product_price_shop = #{productPriceShop,jdbcType=DECIMAL},
+      </if>
+      <if test="productPriceMarket != null">
+        product_price_market = #{productPriceMarket,jdbcType=DECIMAL},
+      </if>
+      <if test="category2Id != null">
+        category_2_id = #{category2Id,jdbcType=INTEGER},
+      </if>
+      <if test="ishot != null">
+        ishot = #{ishot,jdbcType=VARCHAR},
+      </if>
+      <if test="productImageUrl != null">
+        product_image_url = #{productImageUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="productDescription != null">
+        product_description = #{productDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="productQuantity != null">
+        product_quantity = #{productQuantity}
+      </if>
+    </set>
+    where product_id = #{productId}
+  	</update>
+  	
+  	<!-- delete -->
+  	<delete id="deleteProductById">
+  		delete from product
+  		where product_id = #{productId}
+  	</delete>
+</mapper>

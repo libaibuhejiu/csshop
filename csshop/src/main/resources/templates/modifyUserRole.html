@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+<script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
+<script type="text/javascript" th:inline="javascript">
+	var ctxPath = [[@{/}]];//项目根路径
+	window.onload = function(){
+		var username = [[${userRole.userName}]];
+		var id = [[${userRole.userId}]];
+		var roleId = [[${userRole.roleId}]];
+		$("#username").val(username);	
+		$("#id").val(id);
+		$("#role_select").val(roleId.toString());
+		
+	}
+	
+	function updateUserRole(){
+		var userId = $("#id").val();
+		var roleId = $("#role_select").val();
+		var userName = $("#username").val();
+		$.ajax({
+			type:"POST",
+			url:ctxPath+"manage/updateUserRole",
+			data:{
+				"userId":userId,
+				"roleId":roleId,
+				"userName":userName
+			},
+			dataType:"JSON",
+			success:function(data){
+				if (data.status == "1") {
+					alert("修改成功");
+					window.location.href=ctxPath+"manage/roleManage";
+				}
+				if (data.status == "2") {
+					alert("修改发生异常，请重试");
+				}
+				
+			}
+		})
+	}
+	
+	
+</script>
+</head>
+<body>
+	<div align="center">
+		
+		<form>
+			<table>
+				<tr>
+					<td>id:</td>
+					<td><input id="id" name="id" type="text" readonly="readonly"/></td>
+				</tr>
+				<tr>
+					<td>用户名:</td>
+					<td><input id="username" name="username" type="text" readonly="readonly"/></td>
+				</tr>
+				<tr>
+					<td>角色:</td>
+					<td>
+						<select id="role_select" name="roleId">
+							<option value="2">用户</option>
+							<option value="1">管理员</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><input type="button" value="修改" onclick="updateUserRole()"/></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
